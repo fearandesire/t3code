@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SaaS landing header mockup</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-sans); color: var(--foreground); }
+  .page { width: 100%; max-width: 100%; }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+  .logo {
+    width: 24px; height: 24px; border-radius: 7px;
+    background: var(--accent); color: var(--accent-foreground);
+    display: grid; place-items: center; font-size: 13px; font-weight: 800;
+  }
+  .links { display: flex; gap: 20px; font-size: 14px; color: var(--muted-foreground); }
+  .links a { color: inherit; text-decoration: none; }
+  .links a:hover { color: var(--foreground); }
+  .nav-cta { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+  .nav-cta .signin { color: var(--muted-foreground); }
+
+  .btn {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+  .btn-ghost { border-color: var(--border); color: var(--foreground); }
+
+  /* Hero */
+  .hero { padding: 40px 0 32px; max-width: 560px; }
+  .eyebrow {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--accent-surface);
+    color: var(--accent-surface-foreground);
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  h1 { font-size: 38px; line-height: 1.1; letter-spacing: -0.03em; margin: 0 0 14px; }
+  .sub { font-size: 16px; line-height: 1.55; color: var(--muted-foreground); margin: 0 0 22px; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-lg { padding: 11px 18px; font-size: 15px; }
+
+  /* Edge-to-edge band */
+  .band {
+    width: 100%;
+    padding: 20px 16px;
+    border-radius: var(--radius);
+    background: var(--accent);
+    color: var(--accent-foreground);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .band strong { font-size: 15px; }
+  .band span { font-size: 14px; opacity: 0.85; }
+  .stats { display: flex; gap: 28px; }
+  .stat b { display: block; font-size: 20px; letter-spacing: -0.02em; }
+  .stat small { font-size: 12px; opacity: 0.85; }
+
+  @media (max-width: 520px) {
+    .links { display: none; }
+    h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <nav class="nav">
+      <div class="brand"><span class="logo">N</span>Northwind</div>
+      <div class="links">
+        <a href="#">Product</a>
+        <a href="#">Pricing</a>
+        <a href="#">Customers</a>
+        <a href="#">Docs</a>
+      </div>
+      <div class="nav-cta">
+        <span class="signin">Sign in</span>
+        <a class="btn btn-primary" href="#">Start free</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <span class="eyebrow">New: Workflow automations</span>
+      <h1>Ship projects faster, together.</h1>
+      <p class="sub">Northwind brings planning, docs, and reporting into one workspace so your team spends less time coordinating and more time building.</p>
+      <div class="actions">
+        <a class="btn btn-primary btn-lg" href="#">Get started</a>
+        <a class="btn btn-ghost btn-lg" href="#">Book a demo</a>
+      </div>
+    </section>
+
+    <section class="band">
+      <div>
+        <strong>Trusted by 12,000+ teams</strong><br>
+        <span>From early-stage startups to global enterprises.</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><b>99.99%</b><small>Uptime</small></div>
+        <div class="stat"><b>4.8/5</b><small>Avg. rating</small></div>
+        <div class="stat"><b>2x</b><small>Faster delivery</small></div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

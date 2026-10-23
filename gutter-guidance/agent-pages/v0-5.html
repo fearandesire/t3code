@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Postgres vs MySQL vs SQLite</title>
+<style>
+  .wrap { width: 100%; font-family: var(--font-sans); color: var(--foreground); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted-foreground); margin: 0 0 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .c1 { background: var(--chart-1); }
+  .c2 { background: var(--chart-2); }
+  .c3 { background: var(--chart-3); }
+
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 13px; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--border); }
+  thead th { font-size: 12px; font-weight: 600; color: var(--muted-foreground); padding-top: 0; }
+  thead th .tag { display: inline-flex; align-items: center; gap: 6px; color: var(--foreground); font-size: 13px; }
+  tbody th { width: 22%; font-weight: 600; color: var(--foreground); }
+  tbody th small { display: block; font-weight: 400; font-size: 11px; color: var(--muted-foreground); margin-top: 2px; }
+  td:last-child, th:last-child { padding-right: 0; }
+
+  .bar { display: flex; align-items: center; gap: 8px; }
+  .track { flex: 1; height: 8px; border-radius: 4px; background: var(--muted); overflow: hidden; min-width: 0; }
+  .fill { height: 100%; border-radius: 4px; }
+  .num { font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; width: 28px; text-align: right; color: var(--foreground); }
+  .note { display: block; margin-top: 5px; font-size: 11.5px; line-height: 1.4; color: var(--muted-foreground); }
+
+  tfoot td, tfoot th { border-bottom: 0; padding-top: 12px; }
+  tfoot th { font-weight: 600; }
+  .total { font-weight: 600; }
+
+  @media (max-width: 520px) {
+    table { font-size: 12px; }
+    th, td { padding: 8px 6px 8px 0; }
+    tbody th { width: 24%; }
+    .num { width: 20px; font-size: 11px; }
+    .bar { gap: 4px; }
+    .note { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="legend" aria-hidden="true">
+    <span><i class="dot c1"></i>PostgreSQL</span>
+    <span><i class="dot c2"></i>MySQL</span>
+    <span><i class="dot c3"></i>SQLite</span>
+    <span>Score out of 10, higher is better</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Criterion</th>
+        <th scope="col"><span class="tag"><i class="dot c1"></i>PostgreSQL</span></th>
+        <th scope="col"><span class="tag"><i class="dot c2"></i>MySQL</span></th>
+        <th scope="col"><span class="tag"><i class="dot c3"></i>SQLite</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">SQL features<small>Types, CTEs, JSON, extensions</small></th>
+        <td><div class="bar"><div class="track"><div class="fill c1" style="width:95%"></div></div><span class="num">9.5</span></div><span class="note">Richest feature set; extensions like PostGIS</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c2" style="width:75%"></div></div><span class="num">7.5</span></div><span class="note">Solid since 8.0 (CTEs, windows)</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c3" style="width:65%"></div></div><span class="num">6.5</span></div><span class="note">Lean, loose typing</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Concurrency<small>Many writers at once</small></th>
+        <td><div class="bar"><div class="track"><div class="fill c1" style="width:90%"></div></div><span class="num">9</span></div><span class="note">MVCC, strong under mixed load</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c2" style="width:80%"></div></div><span class="num">8</span></div><span class="note">InnoDB row-level locking</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c3" style="width:30%"></div></div><span class="num">3</span></div><span class="note">Single writer at a time</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Read speed<small>Simple queries</small></th>
+        <td><div class="bar"><div class="track"><div class="fill c1" style="width:80%"></div></div><span class="num">8</span></div><span class="note">Great planner on complex queries</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c2" style="width:85%"></div></div><span class="num">8.5</span></div><span class="note">Fast on simple lookups</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c3" style="width:90%"></div></div><span class="num">9</span></div><span class="note">In-process, no network hop</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Scalability<small>Size and replication</small></th>
+        <td><div class="bar"><div class="track"><div class="fill c1" style="width:85%"></div></div><span class="num">8.5</span></div><span class="note">Replicas, partitioning, big data</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c2" style="width:85%"></div></div><span class="num">8.5</span></div><span class="note">Proven at web scale</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c3" style="width:25%"></div></div><span class="num">2.5</span></div><span class="note">Single file, single machine</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Ease of setup<small>Time to first query</small></th>
+        <td><div class="bar"><div class="track"><div class="fill c1" style="width:60%"></div></div><span class="num">6</span></div><span class="note">Server, roles, tuning</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c2" style="width:65%"></div></div><span class="num">6.5</span></div><span class="note">Server to run and secure</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c3" style="width:100%"></div></div><span class="num">10</span></div><span class="note">Zero config, one file</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Data integrity<small>Constraints, ACID</small></th>
+        <td><div class="bar"><div class="track"><div class="fill c1" style="width:95%"></div></div><span class="num">9.5</span></div><span class="note">Strict, transactional DDL</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c2" style="width:75%"></div></div><span class="num">7.5</span></div><span class="note">Good with InnoDB and strict mode</span></td>
+        <td><div class="bar"><div class="track"><div class="fill c3" style="width:70%"></div></div><span class="num">7</span></div><span class="note">ACID, but flexible type checks</span></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">Average</th>
+        <td><div class="bar"><div class="track"><div class="fill c1" style="width:85.8%"></div></div><span class="num total">8.6</span></div></td>
+        <td><div class="bar"><div class="track"><div class="fill c2" style="width:77.5%"></div></div><span class="num total">7.8</span></div></td>
+        <td><div class="bar"><div class="track"><div class="fill c3" style="width:55.8%"></div></div><span class="num total">5.6</span></div></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+</body>
+</html>

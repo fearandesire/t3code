@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quarterly revenue</title>
+<style>
+  .wrap {
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+  }
+  .hero {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 32px 24px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 55%, var(--accent)) 100%);
+    color: var(--primary-foreground);
+  }
+  .hero .eyebrow {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+  .hero .total {
+    margin: 0;
+    font-size: 40px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .hero .sub {
+    margin: 8px 0 0;
+    font-size: 14px;
+    opacity: 0.85;
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .tile {
+    box-sizing: border-box;
+    padding: 16px;
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .tile .label {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+  .tile .value {
+    margin: 6px 0 4px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .tile .delta {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .up { color: var(--success); }
+  .down { color: var(--destructive); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <p class="eyebrow">Q3 2026 revenue</p>
+      <p class="total">$4.82M</p>
+      <p class="sub">Up 12.4% from Q2, ahead of the $4.5M plan</p>
+    </section>
+    <div class="tiles">
+      <div class="tile">
+        <p class="label">Recurring revenue</p>
+        <p class="value">$3.61M</p>
+        <p class="delta up">+9.8% vs Q2</p>
+      </div>
+      <div class="tile">
+        <p class="label">New business</p>
+        <p class="value">$0.94M</p>
+        <p class="delta up">+21.3% vs Q2</p>
+      </div>
+      <div class="tile">
+        <p class="label">Churned revenue</p>
+        <p class="value">$0.27M</p>
+        <p class="delta down">+4.1% vs Q2</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

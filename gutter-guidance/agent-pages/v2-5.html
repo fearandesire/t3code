@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; }
+  .wrap { width: 100%; max-width: 100%; font-family: var(--font-sans); color: var(--foreground); }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; }
+  thead th {
+    text-align: left; font-weight: 600; color: var(--muted-foreground);
+    font-size: 12px; text-transform: uppercase; letter-spacing: .04em;
+    padding: 8px 10px; border-bottom: 1px solid var(--border);
+  }
+  tbody th {
+    text-align: left; font-weight: 600; padding: 12px 10px 4px;
+    border-top: 1px solid var(--border); vertical-align: top;
+  }
+  tbody td { padding: 4px 10px 12px; vertical-align: top; }
+  tbody tr.head th { border-top: 1px solid var(--border); }
+  .col-feature { width: 22%; }
+  .bar {
+    height: 8px; border-radius: 999px; background: var(--muted);
+    overflow: hidden; margin-bottom: 6px;
+  }
+  .fill { height: 100%; border-radius: 999px; }
+  .pg .fill { background: var(--chart-1); }
+  .my .fill { background: var(--chart-2); }
+  .sq .fill { background: var(--chart-3); }
+  .score { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .num { font-family: var(--font-mono); font-weight: 600; font-size: 13px; }
+  .note { color: var(--muted-foreground); font-size: 12px; line-height: 1.35; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; font-size: 12px; color: var(--muted-foreground); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+  .total td { padding-top: 12px; border-top: 2px solid var(--border); font-weight: 600; }
+  @media (max-width: 520px) {
+    table { font-size: 12px; }
+    thead th, tbody th, tbody td { padding-left: 4px; padding-right: 4px; }
+    .col-feature { width: 20%; }
+    .note { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <table>
+    <colgroup>
+      <col class="col-feature"><col><col><col>
+    </colgroup>
+    <thead>
+      <tr><th>Criterion</th><th>Postgres</th><th>MySQL</th><th>SQLite</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>SQL features</th>
+        <td class="pg"><div class="bar"><div class="fill" style="width:95%"></div></div><div class="score"><span class="num">9.5</span></div><div class="note">CTEs, window functions, JSONB, extensions</div></td>
+        <td class="my"><div class="bar"><div class="fill" style="width:75%"></div></div><div class="score"><span class="num">7.5</span></div><div class="note">Solid since 8.0, fewer advanced types</div></td>
+        <td class="sq"><div class="bar"><div class="fill" style="width:65%"></div></div><div class="score"><span class="num">6.5</span></div><div class="note">Capable core, limited ALTER and types</div></td>
+      </tr>
+      <tr>
+        <th>Write concurrency</th>
+        <td class="pg"><div class="bar"><div class="fill" style="width:90%"></div></div><div class="score"><span class="num">9.0</span></div><div class="note">MVCC, many parallel writers</div></td>
+        <td class="my"><div class="bar"><div class="fill" style="width:80%"></div></div><div class="score"><span class="num">8.0</span></div><div class="note">InnoDB row-level locking</div></td>
+        <td class="sq"><div class="bar"><div class="fill" style="width:30%"></div></div><div class="score"><span class="num">3.0</span></div><div class="note">Single writer at a time</div></td>
+      </tr>
+      <tr>
+        <th>Setup simplicity</th>
+        <td class="pg"><div class="bar"><div class="fill" style="width:60%"></div></div><div class="score"><span class="num">6.0</span></div><div class="note">Server, roles, tuning</div></td>
+        <td class="my"><div class="bar"><div class="fill" style="width:65%"></div></div><div class="score"><span class="num">6.5</span></div><div class="note">Server, users, config</div></td>
+        <td class="sq"><div class="bar"><div class="fill" style="width:100%"></div></div><div class="score"><span class="num">10</span></div><div class="note">Zero config, one file</div></td>
+      </tr>
+      <tr>
+        <th>Scalability</th>
+        <td class="pg"><div class="bar"><div class="fill" style="width:85%"></div></div><div class="score"><span class="num">8.5</span></div><div class="note">Replicas, partitioning, Citus</div></td>
+        <td class="my"><div class="bar"><div class="fill" style="width:85%"></div></div><div class="score"><span class="num">8.5</span></div><div class="note">Mature replication and sharding tools</div></td>
+        <td class="sq"><div class="bar"><div class="fill" style="width:25%"></div></div><div class="score"><span class="num">2.5</span></div><div class="note">Single node, embedded</div></td>
+      </tr>
+      <tr>
+        <th>Extensibility</th>
+        <td class="pg"><div class="bar"><div class="fill" style="width:100%"></div></div><div class="score"><span class="num">10</span></div><div class="note">PostGIS, pgvector, custom types</div></td>
+        <td class="my"><div class="bar"><div class="fill" style="width:50%"></div></div><div class="score"><span class="num">5.0</span></div><div class="note">Plugins and storage engines</div></td>
+        <td class="sq"><div class="bar"><div class="fill" style="width:45%"></div></div><div class="score"><span class="num">4.5</span></div><div class="note">Loadable extensions, FTS5</div></td>
+      </tr>
+      <tr>
+        <th>Resource footprint</th>
+        <td class="pg"><div class="bar"><div class="fill" style="width:50%"></div></div><div class="score"><span class="num">5.0</span></div><div class="note">Process per connection</div></td>
+        <td class="my"><div class="bar"><div class="fill" style="width:60%"></div></div><div class="score"><span class="num">6.0</span></div><div class="note">Thread per connection</div></td>
+        <td class="sq"><div class="bar"><div class="fill" style="width:98%"></div></div><div class="score"><span class="num">9.8</span></div><div class="note">Library, under 1 MB</div></td>
+      </tr>
+      <tr class="total">
+        <td style="padding-left:10px">Average</td>
+        <td class="pg"><span class="num">8.0</span></td>
+        <td class="my"><span class="num">7.1</span></td>
+        <td class="sq"><span class="num">6.1</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="legend">
+    <span><i style="background:var(--chart-1)"></i>Postgres</span>
+    <span><i style="background:var(--chart-2)"></i>MySQL</span>
+    <span><i style="background:var(--chart-3)"></i>SQLite</span>
+    <span>Scores out of 10, higher is better</span>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Particle field</title>
+<style>
+  #field {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 340px;
+    touch-action: pan-y;
+  }
+  #field canvas {
+    display: block;
+    width: 100%;
+    height: 340px;
+  }
+</style>
+</head>
+<body>
+<div id="field" role="img" aria-label="Animated field of drifting particles linked by faint lines. Particles drift away from the pointer.">
+  <canvas id="c"></canvas>
+</div>
+
+<script>
+(function () {
+  var HEIGHT = 340;
+  var host = document.getElementById('field');
+  var canvas = document.getElementById('c');
+  var ctx = canvas.getContext('2d');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var W = 0, H = HEIGHT, dpr = 1;
+  var particles = [];
+  var pointer = { x: -9999, y: -9999, active: false };
+  var palette = [];
+  var linkColor = '#888';
+  var visible = true;
+  var rafId = 0;
+  var lastTime = 0;
+  var frame = 0;
+
+  function readTheme() {
+    var cs = getComputedStyle(document.documentElement);
+    var next = [];
+    for (var i = 1; i <= 6; i++) {
+      var v = cs.getPropertyValue('--chart-' + i).trim();
+      if (v) next.push(v);
+    }
+    if (!next.length) {
+      var a = cs.getPropertyValue('--accent').trim() || cs.getPropertyValue('--primary').trim() || '#6aa5ff';
+      next.push(a);
+    }
+    palette = next;
+    linkColor = cs.getPropertyValue('--muted-foreground').trim() || cs.getPropertyValue('--foreground').trim() || '#888';
+  }
+
+  function targetCount() {
+    var n = Math.round((W * H) / 6500);
+    return Math.max(24, Math.min(140, n));
+  }
+
+  function makeParticle(initial) {
+    var speed = 8 + Math.random() * 22;
+    var angle = Math.random() * Math.PI * 2;
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      r: 1.2 + Math.random() * 2.2,
+      c: Math.floor(Math.random() * 6),
+      phase: Math.random() * Math.PI * 2,
+      tw: 0.6 + Math.random() * 1.4
+    };
+  }
+
+  function resize() {
+    var w = Math.floor(host.clientWidth);
+    if (!w) return;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var changed = w !== W;
+    W = w;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    var want = targetCount();
+    if (!particles.length) {
+      for (var i = 0; i < want; i++) particles.push(makeParticle(true));
+    } else if (changed) {
+      while (particles.length < want) particles.push(makeParticle(false));
+      if (particles.length > want) particles.length = want;
+      for (var j = 0; j < particles.length; j++) {
+        var p = particles[j];
+        if (p.x > W) p.x = Math.random() * W;
+      }
+    }
+    if (reduceMotion) draw(0);
+  }
+
+  function step(dt) {
+    var linkDist = 110;
+    var repelR = 120;
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+
+      if (pointer.active) {
+        var dx = p.x - pointer.x;
+        var dy = p.y - pointer.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 < repelR * repelR && d2 > 0.01) {
+          var d = Math.sqrt(d2);
+          var f = (1 - d / repelR) * 260;
+          p.vx += (dx / d) * f * dt;
+          p.vy += (dy / d) * f * dt;
+        }
+      }
+
+      // gentle swirl so the field never settles
+      p.vx += Math.sin(p.phase + frame * 0.004 + p.y * 0.01) * 6 * dt;
+      p.vy += Math.cos(p.phase + frame * 0.004 + p.x * 0.01) * 6 * dt;
+
+      // damping toward a cruising speed
+      var sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy) || 1;
+      var cruise = 18;
+      var k = 1 + (cruise / sp - 1) * Math.min(1, dt * 1.2);
+      p.vx *= k;
+      p.vy *= k;
+
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+
+      if (p.x < -10) p.x = W + 10;
+      else if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      else if (p.y > H + 10) p.y = -10;
+    }
+  }
+
+  function draw(time) {
+    ctx.clearRect(0, 0, W, H);
+    var linkDist = 110;
+    var ld2 = linkDist * linkDist;
+    var n = particles.length;
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = linkColor;
+    for (var i = 0; i < n; i++) {
+      var a = particles[i];
+      for (var j = i + 1; j < n; j++) {
+        var b = particles[j];
+        var dx = a.x - b.x;
+        if (dx > linkDist || dx < -linkDist) continue;
+        var dy = a.y - b.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 < ld2) {
+          ctx.globalAlpha = (1 - d2 / ld2) * 0.28;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for (var k = 0; k < n; k++) {
+      var p = particles[k];
+      var tw = 0.65 + 0.35 * Math.sin(time * 0.001 * p.tw + p.phase);
+      ctx.fillStyle = palette[p.c % palette.length];
+      ctx.globalAlpha = 0.22 * tw;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * 2.6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 0.9 * tw;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function loop(now) {
+    rafId = 0;
+    if (!visible) return;
+    var dt = lastTime ? Math.min((now - lastTime) / 1000, 0.05) : 0.016;
+    lastTime = now;
+    frame++;
+    if (frame % 30 === 0) readTheme();
+    step(dt);
+    draw(now);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function start() {
+    if (reduceMotion || rafId) return;
+    lastTime = 0;
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function setPointer(e) {
+    var r = canvas.getBoundingClientRect();
+    pointer.x = e.clientX - r.left;
+    pointer.y = e.clientY - r.top;
+    pointer.active = true;
+  }
+  canvas.addEventListener('pointermove', setPointer);
+  canvas.addEventListener('pointerdown', setPointer);
+  canvas.addEventListener('pointerleave', function () { pointer.active = false; });
+  canvas.addEventListener('pointercancel', function () { pointer.active = false; });
+
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(resize).observe(host);
+  } else {
+    window.addEventListener('resize', resize);
+  }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      visible = entries[0].isIntersecting;
+      if (visible) start();
+    }).observe(host);
+  }
+
+  readTheme();
+  resize();
+  if (reduceMotion) {
+    draw(0);
+  } else {
+    start();
+  }
+})();
+</script>
+</body>
+</html>

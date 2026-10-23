@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  .dash { width: 100%; max-width: 100%; font-family: var(--font-sans); color: var(--foreground); }
+
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 0;
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .nav { display: flex; gap: 4px; }
+  .nav button {
+    font: inherit; font-size: 12px; color: var(--muted-foreground);
+    background: transparent; border: 0; border-radius: var(--radius);
+    padding: 4px 10px; cursor: pointer;
+  }
+  .nav button:hover { color: var(--foreground); background: var(--muted); }
+  .nav button[aria-pressed="true"] { color: var(--foreground); background: var(--muted); }
+  .nav button:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+
+  .kpis {
+    display: grid; gap: 12px; margin: 16px 0;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .kpi {
+    background: var(--card); color: var(--card-foreground);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px;
+  }
+  .kpi .label { font-size: 12px; color: var(--muted-foreground); }
+  .kpi .value { font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .kpi .delta { font-size: 12px; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .up { color: var(--success); }
+  .down { color: var(--destructive); }
+
+  .chart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .chart-head h2 { margin: 0; font-size: 14px; font-weight: 600; }
+  .chart-head span { font-size: 12px; color: var(--muted-foreground); }
+  .chart-wrap { position: relative; width: 100%; height: 240px; }
+  #chart { display: block; width: 100%; height: 240px; }
+  .tip {
+    position: absolute; pointer-events: none; display: none;
+    background: var(--popover); color: var(--popover-foreground);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 6px 10px; font-size: 12px; white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+</head>
+<body>
+<div class="dash">
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span>Acme Analytics</div>
+    <nav class="nav" aria-label="Range">
+      <button type="button" data-range="7" aria-pressed="false">7d</button>
+      <button type="button" data-range="30" aria-pressed="true">30d</button>
+      <button type="button" data-range="90" aria-pressed="false">90d</button>
+    </nav>
+  </header>
+
+  <section class="kpis" aria-label="Key metrics">
+    <div class="kpi"><div class="label">Revenue</div><div class="value" id="k-rev">$48.2k</div><div class="delta up" id="d-rev">+12.4%</div></div>
+    <div class="kpi"><div class="label">Active users</div><div class="value" id="k-usr">9,318</div><div class="delta up" id="d-usr">+5.1%</div></div>
+    <div class="kpi"><div class="label">Conversion</div><div class="value" id="k-cvr">3.42%</div><div class="delta down" id="d-cvr">-0.3%</div></div>
+    <div class="kpi"><div class="label">Churn</div><div class="value" id="k-chn">1.8%</div><div class="delta up" id="d-chn">-0.2%</div></div>
+  </section>
+
+  <div class="chart-head">
+    <h2>Daily sessions</h2>
+    <span id="range-label">Last 30 days</span>
+  </div>
+  <div class="chart-wrap" id="wrap">
+    <canvas id="chart" role="img" aria-label="Area chart of daily sessions"></canvas>
+    <div class="tip" id="tip"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var canvas = document.getElementById('chart');
+  var wrap = document.getElementById('wrap');
+  var tip = document.getElementById('tip');
+  var ctx = canvas.getContext('2d');
+  var H = 240;
+  var data = [];
+  var hover = -1;
+  var geo = null;
+
+  function series(n) {
+    var out = [], v = 1200, seed = n * 7 + 3;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    for (var i = 0; i < n; i++) {
+      v += (rnd() - 0.42) * 140;
+      v = Math.max(600, v);
+      out.push(Math.round(v + Math.sin(i / 3) * 60));
+    }
+    return out;
+  }
+
+  function css(name, fallback) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return v || fallback;
+  }
+
+  function draw() {
+    var W = wrap.clientWidth;
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+
+    var color = css('--chart-1', '#4f8cff');
+    var grid = css('--border', 'rgba(128,128,128,.3)');
+    var fg = css('--muted-foreground', '#888');
+    var padTop = 16, padBottom = 22;
+    var min = Math.min.apply(null, data), max = Math.max.apply(null, data);
+    var lo = Math.floor((min - (max - min) * 0.1) / 100) * 100;
+    var hi = Math.ceil((max + (max - min) * 0.1) / 100) * 100;
+    var n = data.length;
+    var plotH = H - padTop - padBottom;
+    function x(i) { return (i / (n - 1)) * W; }
+    function y(v) { return padTop + (1 - (v - lo) / (hi - lo)) * plotH; }
+    geo = { x: x, W: W, n: n, y: y };
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = grid;
+    ctx.fillStyle = fg;
+    ctx.font = '11px ' + css('--font-sans', 'sans-serif');
+    ctx.textBaseline = 'bottom';
+    for (var g = 0; g <= 3; g++) {
+      var gv = lo + (hi - lo) * (g / 3);
+      var gy = Math.round(y(gv)) + 0.5;
+      ctx.globalAlpha = 0.6;
+      ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.textAlign = 'left';
+      ctx.fillText(Math.round(gv).toLocaleString(), 4, gy - 2);
+    }
+
+    var grad = ctx.createLinearGradient(0, padTop, 0, H - padBottom);
+    grad.addColorStop(0, color);
+    grad.addColorStop(1, 'transparent');
+
+    ctx.beginPath();
+    ctx.moveTo(x(0), H - padBottom);
+    for (var i = 0; i < n; i++) ctx.lineTo(x(i), y(data[i]));
+    ctx.lineTo(x(n - 1), H - padBottom);
+    ctx.closePath();
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    ctx.beginPath();
+    for (var j = 0; j < n; j++) { if (j === 0) ctx.moveTo(x(j), y(data[j])); else ctx.lineTo(x(j), y(data[j])); }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+
+    ctx.fillStyle = fg;
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+    ctx.fillText(n + 'd ago', 4, H - 6);
+    ctx.textAlign = 'right';
+    ctx.fillText('Today', W - 4, H - 6);
+
+    if (hover >= 0) {
+      var hx = x(hover), hy = y(data[hover]);
+      ctx.strokeStyle = fg;
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(hx, padTop); ctx.lineTo(hx, H - padBottom); ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = css('--background', '#fff');
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(hx, hy, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+  }
+
+  function setRange(n) {
+    data = series(n);
+    hover = -1;
+    tip.style.display = 'none';
+    document.getElementById('range-label').textContent = 'Last ' + n + ' days';
+    var last = data[data.length - 1], first = data[0];
+    var pct = ((last - first) / first * 100);
+    document.getElementById('k-usr').textContent = (last * 7.8).toLocaleString(undefined, { maximumFractionDigits: 0 });
+    document.getElementById('k-rev').textContent = '$' + (data.reduce(function (a, b) { return a + b; }, 0) * 1.4 / 1000).toFixed(1) + 'k';
+    var d = document.getElementById('d-usr');
+    d.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
+    d.className = 'delta ' + (pct >= 0 ? 'up' : 'down');
+    draw();
+  }
+
+  document.querySelectorAll('.nav button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.nav button').forEach(function (o) { o.setAttribute('aria-pressed', String(o === b)); });
+      setRange(parseInt(b.dataset.range, 10));
+    });
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    if (!geo) return;
+    var r = canvas.getBoundingClientRect();
+    var px = e.clientX - r.left;
+    var i = Math.max(0, Math.min(geo.n - 1, Math.round(px / geo.W * (geo.n - 1))));
+    hover = i;
+    draw();
+    tip.textContent = data[i].toLocaleString() + ' sessions, ' + (geo.n - 1 - i) + 'd ago';
+    tip.style.display = 'block';
+    var tx = geo.x(i) + 10;
+    if (tx + tip.offsetWidth > geo.W) tx = geo.x(i) - tip.offsetWidth - 10;
+    tip.style.left = Math.max(0, tx) + 'px';
+    tip.style.top = Math.max(0, geo.y(data[i]) - 34) + 'px';
+  });
+  canvas.addEventListener('pointerleave', function () {
+    hover = -1; tip.style.display = 'none'; draw();
+  });
+
+  if (window.ResizeObserver) new ResizeObserver(draw).observe(wrap);
+  else window.addEventListener('resize', draw);
+  new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ['style', 'class', 'data-theme'] });
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', draw);
+  }
+
+  setRange(30);
+})();
+</script>
+</body>
+</html>

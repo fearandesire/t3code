@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quarterly revenue</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  .wrap {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+  }
+  .hero {
+    width: 100%;
+    padding: 28px 24px;
+    border-radius: var(--radius);
+    background: linear-gradient(135deg, #4338ca 0%, #7c3aed 55%, #db2777 100%);
+    color: #ffffff;
+  }
+  .hero .eyebrow {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .hero .headline {
+    margin: 0;
+    font-size: 40px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .hero .sub {
+    margin: 8px 0 0;
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .tile {
+    padding: 16px;
+    border-radius: var(--radius);
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+  }
+  .tile .label {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted-foreground);
+  }
+  .tile .value {
+    margin: 6px 0 0;
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+  .tile .delta {
+    margin: 6px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .up { color: var(--success); }
+  .flat { color: var(--muted-foreground); }
+  @media (max-width: 420px) {
+    .hero { padding: 20px 16px; }
+    .hero .headline { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <p class="eyebrow">Q3 2026 revenue</p>
+      <h1 class="headline">$12.4M</h1>
+      <p class="sub">Up 18% year over year, our strongest quarter to date.</p>
+    </section>
+    <div class="tiles">
+      <div class="tile">
+        <p class="label">Quarter over quarter</p>
+        <p class="value">+7.2%</p>
+        <p class="delta up">vs. $11.6M in Q2</p>
+      </div>
+      <div class="tile">
+        <p class="label">Recurring revenue</p>
+        <p class="value">$9.1M</p>
+        <p class="delta up">73% of total</p>
+      </div>
+      <div class="tile">
+        <p class="label">Net revenue retention</p>
+        <p class="value">112%</p>
+        <p class="delta flat">Flat vs. Q2</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

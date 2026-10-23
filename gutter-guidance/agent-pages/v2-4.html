@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6-week project timeline</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  .gantt {
+    width: 100%;
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    font-size: 13px;
+    line-height: 1.3;
+    --label: clamp(92px, 24%, 168px);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: var(--label) 1fr;
+    align-items: center;
+    height: 38px;
+    border-bottom: 1px solid var(--border);
+  }
+  .row:last-child { border-bottom: 0; }
+  .row.head { height: 30px; color: var(--muted-foreground); font-size: 12px; }
+  .label {
+    padding-right: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .label small {
+    display: block;
+    color: var(--muted-foreground);
+    font-size: 11px;
+  }
+  .track {
+    position: relative;
+    height: 100%;
+    background-image: linear-gradient(to right, var(--border) 1px, transparent 1px);
+    background-size: calc(100% / 6) 100%;
+    border-right: 1px solid var(--border);
+  }
+  .head .track { display: grid; grid-template-columns: repeat(6, 1fr); background: none; border-right: 0; }
+  .head .track span { padding-left: 6px; align-self: center; }
+  .bar {
+    position: absolute;
+    top: 9px;
+    height: 20px;
+    border-radius: 5px;
+    background: var(--c);
+  }
+  .bar.milestone {
+    top: 7px;
+    height: 24px;
+    width: 24px;
+    margin-left: -24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--background);
+    font-size: 12px;
+  }
+  .group {
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+    height: 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="gantt" role="table" aria-label="Gantt timeline of a 6-week project">
+  <div class="row head" role="row">
+    <div class="label" role="columnheader">Task</div>
+    <div class="track" role="presentation">
+      <span>Wk 1</span><span>Wk 2</span><span>Wk 3</span><span>Wk 4</span><span>Wk 5</span><span>Wk 6</span>
+    </div>
+  </div>
+
+  <div class="group">Plan</div>
+  <div class="row" role="row">
+    <div class="label" role="cell">Research<small>Wk 1 to mid 2</small></div>
+    <div class="track"><div class="bar" style="--c:var(--chart-1); left:0%; width:25%" title="Research: weeks 1 to mid 2"></div></div>
+  </div>
+  <div class="row" role="row">
+    <div class="label" role="cell">Requirements<small>Wk 2 to mid 3</small></div>
+    <div class="track"><div class="bar" style="--c:var(--chart-1); left:16.667%; width:25%" title="Requirements: weeks 2 to mid 3"></div></div>
+  </div>
+
+  <div class="group">Build</div>
+  <div class="row" role="row">
+    <div class="label" role="cell">Design<small>Wk 3 to mid 4</small></div>
+    <div class="track"><div class="bar" style="--c:var(--chart-2); left:33.333%; width:25%" title="Design: weeks 3 to mid 4"></div></div>
+  </div>
+  <div class="row" role="row">
+    <div class="label" role="cell">Core build<small>Mid 3 to wk 5</small></div>
+    <div class="track"><div class="bar" style="--c:var(--chart-3); left:41.667%; width:41.667%" title="Core build: mid week 3 to end of week 5"></div></div>
+  </div>
+  <div class="row" role="row">
+    <div class="label" role="cell">Integrations<small>Mid 4 to wk 5</small></div>
+    <div class="track"><div class="bar" style="--c:var(--chart-4); left:58.333%; width:25%" title="Integrations: mid week 4 to end of week 5"></div></div>
+  </div>
+
+  <div class="group">Ship</div>
+  <div class="row" role="row">
+    <div class="label" role="cell">QA &amp; testing<small>Mid 5 to mid 6</small></div>
+    <div class="track"><div class="bar" style="--c:var(--chart-5); left:75%; width:16.667%" title="QA and testing: mid week 5 to mid week 6"></div></div>
+  </div>
+  <div class="row" role="row">
+    <div class="label" role="cell">Launch<small>End of wk 6</small></div>
+    <div class="track"><div class="bar milestone" style="--c:var(--chart-6); left:100%" title="Launch: end of week 6">&#9733;</div></div>
+  </div>
+</div>
+</body>
+</html>

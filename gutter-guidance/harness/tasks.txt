@@ -1,0 +1,6 @@
+1. A full-width hero banner with a gradient background and three stat tiles beneath it, for quarterly revenue.
+2. An animated particle-field visualization that fills the whole width of the reply.
+3. A mockup of a SaaS landing page header: nav, hero, and an edge-to-edge colored band.
+4. A Gantt-style timeline of a 6-week project that spans the full width.
+5. A comparison table of Postgres, MySQL and SQLite with a visual score bar per row.
+6. A dashboard with a sticky top bar, KPI cards, and a full-bleed area chart drawn on a canvas.

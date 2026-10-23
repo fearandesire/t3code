@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SaaS landing page header mockup</title>
+<style>
+  * { box-sizing: border-box; }
+  .page { width: 100%; font-family: var(--font-sans); color: var(--foreground); }
+
+  /* Nav */
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+  .logo { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); display: inline-block; }
+  .links { display: flex; gap: 20px; font-size: 14px; color: var(--muted-foreground); }
+  .nav-actions { display: flex; align-items: center; gap: 10px; }
+  .signin { font-size: 14px; color: var(--muted-foreground); }
+  .btn { display: inline-block; font: inherit; font-size: 14px; font-weight: 600; padding: 9px 16px; border-radius: var(--radius); border: 1px solid transparent; cursor: pointer; }
+  .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+  .btn-ghost { background: transparent; color: var(--foreground); border-color: var(--border); }
+
+  /* Hero */
+  .hero { padding: 48px 0 40px; max-width: 560px; }
+  .eyebrow { display: inline-block; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--accent-surface); color: var(--accent-surface-foreground); margin-bottom: 16px; }
+  h1 { margin: 0 0 14px; font-size: 40px; line-height: 1.1; letter-spacing: -0.03em; }
+  .lede { margin: 0 0 24px; font-size: 16px; line-height: 1.55; color: var(--muted-foreground); }
+  .cta { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  /* Edge-to-edge band */
+  .band { background: var(--accent); color: var(--accent-foreground); border-radius: var(--radius); padding: 20px 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+  .band-text { font-size: 15px; font-weight: 600; }
+  .stats { display: flex; gap: 28px; }
+  .stat b { display: block; font-size: 20px; letter-spacing: -0.02em; }
+  .stat span { font-size: 12px; opacity: 0.8; }
+
+  @media (max-width: 520px) {
+    .links { display: none; }
+    h1 { font-size: 30px; }
+    .hero { padding: 32px 0 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <nav class="nav">
+    <div class="brand"><span class="logo"></span>Lumen</div>
+    <div class="links"><span>Product</span><span>Pricing</span><span>Customers</span><span>Docs</span></div>
+    <div class="nav-actions">
+      <span class="signin">Sign in</span>
+      <span class="btn btn-primary">Start free</span>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <span class="eyebrow">New: Workflow automations</span>
+    <h1>Ship reports your team actually reads.</h1>
+    <p class="lede">Lumen turns scattered metrics into one live dashboard, so every team sees the same numbers without waiting on a spreadsheet.</p>
+    <div class="cta">
+      <span class="btn btn-primary">Start free trial</span>
+      <span class="btn btn-ghost">Book a demo</span>
+    </div>
+  </section>
+
+  <div class="band">
+    <div class="band-text">Trusted by 4,000+ teams worldwide</div>
+    <div class="stats">
+      <div class="stat"><b>99.99%</b><span>Uptime</span></div>
+      <div class="stat"><b>12M</b><span>Reports sent</span></div>
+      <div class="stat"><b>4.8/5</b><span>Avg. rating</span></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
