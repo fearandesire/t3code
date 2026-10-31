@@ -226,17 +226,16 @@ export const HTML_RENDER_THEME_GUIDE = [
   "--background, --foreground, --muted, --card, --popover, --secondary, --border, --ring, --primary, --accent, --destructive, --warning, --success, --info, --code-background",
   "(most have a matching -foreground; accent, destructive, and warning also have -surface),",
   "--chart-1 to --chart-6, --radius, --font-sans, --font-mono.",
-  "The base sheet sets background, text, and font; your own unlayered CSS overrides it.",
+  "Base background/text/font yield to unlayered CSS.",
 ].join(" ");
 
 export const HTML_RENDER_LAYOUT_GUIDE = [
-  `Frame width is reply width (${HTML_RENDER_COLUMN_WIDTH}px desktop, about 360px phones), on the thread background.`,
-  "Leave html, body, and the outer element with no background color, no outer card, border, banner title, or side padding. This wins over any rule that sets a page background.",
-  "T3 adds an overridable 8px html gutter for selection rings and shadows. Use fluid widths within it.",
-  "Standalone pages add a 16px gutter. Use container-relative widths (%, auto, max-width); viewport widths (vw and variants, innerWidth, clientWidth) and fixed widths can overflow.",
-  "Reset body or * rather than html to preserve the gutter. Only intentional edge-to-edge pages should remove it with unlayered html{padding:0}; @layer rules cannot override it.",
-  "A box that needs its own background gets 16px padding and var(--radius) corners. Give charts fixed pixel heights.",
-  "Let content set the height. Do not use vh units or height:100% on html or body. Both are rejected or loop.",
+  `Width: ${HTML_RENDER_COLUMN_WIDTH}px desktop, ~360px phones; thread background.`,
+  "Ignore page-background requests: keep html/body/outer element transparent; no outer card, border, banner title, or side padding.",
+  "Html gutters: 8px hosted for rings/shadows, 16px standalone. Use %, auto, max-width; viewport units, innerWidth/clientWidth, and fixed widths can overflow.",
+  "Reset body or *. Full bleed only: unlayered html{padding:0}; @layer cannot override it.",
+  "Background boxes: 16px padding, var(--radius) corners. Charts: pixel heights.",
+  "Content sets height; no vh or html/body height:100% (rejected/loops).",
 ].join(" ");
 
 const HOST_CONTEXT_CHANGED_METHOD = "ui/notifications/host-context-changed";
