@@ -107,6 +107,37 @@ describe("claudeUsageResponseToLimits", () => {
     ]);
   });
 
+  it("shows an unused Session row when no 5-hour window has started", () => {
+    expect(
+      claudeUsageResponseToLimits({
+        checkedAt,
+        response: {
+          rate_limits_available: true,
+          rate_limits: {
+            five_hour: null,
+            seven_day: { utilization: 1, resets_at: "2026-07-25T08:00:00.014919+00:00" },
+          },
+        },
+      }).limits.windows,
+    ).toEqual([
+      {
+        id: "five_hour",
+        kind: "session",
+        label: "Session",
+        usedPercent: 0,
+        windowDurationMins: 300,
+      },
+      {
+        id: "seven_day",
+        kind: "weekly",
+        label: "Weekly",
+        usedPercent: 1,
+        resetsAt: "2026-07-25T08:00:00.014Z",
+        windowDurationMins: 10080,
+      },
+    ]);
+  });
+
   const enterpriseResponse = {
     rate_limits_available: true,
     rate_limits: {

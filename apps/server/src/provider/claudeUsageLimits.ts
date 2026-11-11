@@ -192,6 +192,14 @@ export function claudeUsageResponseToLimits(input: {
     if (!window || typeof window.utilization !== "number") continue;
     windows.push(makeWindow(id, window.utilization, isoFromString(window.resets_at)));
   }
+  // A subscription with no 5-hour window started yet reports `five_hour: null`
+  // next to a live weekly window; the session is unused, not unlimited.
+  if (
+    response.rate_limits.five_hour === null &&
+    typeof response.rate_limits.seven_day?.utilization === "number"
+  ) {
+    windows.unshift(makeWindow("five_hour", 0, undefined));
+  }
   // The CLI's overage allowlist currently has one model; events refer to its first entry.
   let overageIncluded: string | undefined;
   for (const entry of readModelScoped(response.rate_limits)) {
